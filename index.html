@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn & Refer Program</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 420px; }
+        h2 { margin-bottom: 15px; color: #1a1a1a; text-align: center; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        button:hover { background: #218838; }
+        .btn-secondary { background: #007bff; }
+        .btn-secondary:hover { background: #0056b3; }
+        .btn-email { background: #dc3545; margin-top: 8px; }
+        .btn-email:hover { background: #c82333; }
+        .info-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 4px; margin: 15px 0; font-size: 13px; color: #856404; }
+        .active-box { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
+        .balance-box { background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
+        .balance { font-size: 28px; color: #28a745; font-weight: bold; }
+        .hidden { display: none; }
+        .support-section { border-top: 1px solid #eee; margin-top: 20px; padding-top: 15px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <!-- Auth Section (Signup / Login) -->
+    <div id="auth-section">
+        <h2>Referral Program</h2>
+        <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">Account Banayein Ya Login Karein</p>
+        <input type="email" id="email" placeholder="Apna Email Likhein">
+        <input type="password" id="password" placeholder="Password Likhein">
+        <button onclick="registerUser()">Account Banayein (Register)</button>
+        <button onclick="loginUser()" class="btn-secondary">Login Karein</button>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="dashboard-section" class="hidden">
+        <h2>Aapka Dashboard</h2>
+        
+        <div class="balance-box">
+            <p style="font-size: 14px; color: #555;">Aapka Balance</p>
+            <div class="balance">Rs. <span id="user-balance">0</span></div>
+            <small style="color: #666;">Minimum Withdrawal: Rs. 300</small>
+        </div>
+
+        <!-- Unapproved User Warning / Deposit Info -->
+        <div id="activation-box" class="info-box">
+            <strong>⚠️ Account Not Active!</strong><br>
+            Account active karne ke liye 150 Rs is account par bhejein:<br>
+            <b>Easypaisa / JazzCash: 03xx-xxxxxxx (Name)</b><br>
+            Payment ke baad TRX ID aur Email support par bhejein. Payment verify hone ke baad aapka referral link unlock hoga.
+        </div>
+
+        <!-- Approved User Referral Link Section (Hidden by default) -->
+        <div id="ref-box" class="info-box active-box hidden">
+            <strong>✅ Account Active! Invite & Earn (100 Rs Per Friend):</strong><br>
+            <input type="text" id="ref-link" readonly style="margin-top: 5px; background: #fff;">
+            <button onclick="copyLink()" class="btn-secondary" style="padding: 8px; font-size: 14px;">Link Copy Karein</button>
+        </div>
+
+        <!-- Withdrawal Section -->
+        <div style="margin-top: 20px;">
+            <h3 style="font-size: 16px; margin-bottom: 10px;">Withdrawal Request</h3>
+            <select id="withdraw-method">
+                <option value="Easypaisa">Easypaisa</option>
+                <option value="JazzCash">JazzCash</option>
+            </select>
+            <input type="number" id="withdraw-amount" placeholder="Amount (Minimum Rs. 300)">
+            <input type="text" id="withdraw-account" placeholder="Account Number (e.g. 03001234567)">
+            <button onclick="requestWithdrawal()">Withdraw Request Bhejein</button>
+        </div>
+
+        <!-- Customer Support Section -->
+        <div class="support-section">
+            <h4 style="font-size: 14px; color: #555;">Customer Support</h4>
+            <p style="font-size: 12px; color: #777; margin-bottom: 8px;">TRX ID verification ya kisi maslay ke liye raabta karein:</p>
+            
+            <a href="mailto:madniofficial123@gmail.com?subject=Referral%20Website%20Support" style="text-decoration: none;">
+                <button type="button" class="btn-email">Email Support Par Raabta Karein</button>
+            </a>
+            <p style="font-size: 12px; margin-top: 8px; color: #555;"><b>Email:</b> madniofficial123@gmail.com</p>
+        </div>
+
+        <button onclick="logout()" style="background: #6c757d; margin-top: 15px;">Logout</button>
+    </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+    // ⚠️ FIREBASE CONSOLE SE KEYS COPY KARKE YAHAN REPLACE KAREIN
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUserData = null;
+
+    // Check Login State
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            loadDashboard(user);
+        } else {
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+        }
+    });
+
+    // Register User
+    function registerUser() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        if(!email || !password) return alert('Email aur Password likhein!');
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                const refCode = new URLSearchParams(window.location.search).get('ref');
+                
+                db.collection('users').doc(user.uid).set({
+                    email: email,
+                    balance: 0,
+                    referredBy: refCode || null,
+                    isApproved: false
+                });
+            })
+            .catch(err => alert(err.message));
+    }
+
+    // Login User
+    function loginUser() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        if(!email || !password) return alert('Email aur Password likhein!');
+
+        auth.signInWithEmailAndPassword(email, password)
+            .catch(err => alert(err.message));
+    }
+
+    // Load Dashboard
+    function loadDashboard(user) {
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+
+        // Realtime Balance & Security Check
+        db.collection('users').doc(user.uid).onSnapshot((doc) => {
+            if(doc.exists) {
+                currentUserData = doc.data();
+                document.getElementById('user-balance').innerText = currentUserData.balance;
+
+                // Strict Verification Check
+                if(currentUserData.isApproved === true) {
+                    const refURL = window.location.origin + window.location.pathname + '?ref=' + user.uid;
+                    document.getElementById('ref-link').value = refURL;
+                    document.getElementById('ref-box').classList.remove('hidden');
+                    document.getElementById('activation-box').classList.add('hidden');
+                } else {
+                    document.getElementById('ref-box').classList.add('hidden');
+                    document.getElementById('activation-box').classList.remove('hidden');
+                }
+            }
+        });
+    }
+
+    // Withdrawal Request
+    function requestWithdrawal() {
+        const amount = parseInt(document.getElementById('withdraw-amount').value);
+        const method = document.getElementById('withdraw-method').value;
+        const account = document.getElementById('withdraw-account').value;
+
+        if(!amount || !account) return alert('Sahi details enter karein!');
+        
+        if(amount < 300) {
+            return alert('Ghalti: Minimum withdrawal limit Rs. 300 hai!');
+        }
+
+        if(amount > currentUserData.balance) {
+            return alert('Ghalti: Aapka balance kam hai!');
+        }
+
+        db.collection('withdrawals').add({
+            userId: auth.currentUser.uid,
+            email: currentUserData.email,
+            amount: amount,
+            method: method,
+            account: account,
+            status: 'pending',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            db.collection('users').doc(auth.currentUser.uid).update({
+                balance: currentUserData.balance - amount
+            });
+            alert('Withdrawal Request bhej di gayi hai!');
+            document.getElementById('withdraw-amount').value = '';
+            document.getElementById('withdraw-account').value = '';
+        });
+    }
+
+    function copyLink() {
+        const copyText = document.getElementById("ref-link");
+        copyText.select();
+        document.execCommand("copy");
+        alert("Referral Link Copy Ho Gaya!");
+    }
+
+    function logout() {
+        auth.signOut();
+    }
+</script>
+
+</body>
+</html>
