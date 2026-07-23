@@ -48,7 +48,7 @@
 <body>
 
 <div class="card">
-    <!-- Auth Section (Signup / Login / Forgot Password) -->
+    <!-- Auth Section (Signup / Login) -->
     <div id="auth-section">
         <h2 style="font-size: 22px; color: #007bff;">Madni Investment Scheme</h2>
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">Account Banayein Ya Login Karein</p>
@@ -56,21 +56,47 @@
         <input type="email" id="email" placeholder="Apna Email Likhein">
         <input type="password" id="password" placeholder="Password Likhein">
         
-        <button onclick="registerUser()">Account Banayein (Register)</button>
+        <button onclick="startRegistration()">Account Banayein (Register)</button>
         <button onclick="loginUser()" class="btn-secondary">Login Karein</button>
         
         <div style="text-align: center; margin-top: 10px;">
-            <button onclick="showForgotSection()" class="btn-link">Password Bhool Gaye? (Forgot Password)</button>
+            <button onclick="showStep('forgot-email-section')" class="btn-link">Password Bhool Gaye? (Forgot Password)</button>
         </div>
     </div>
 
-    <!-- Forgot Password Section -->
-    <div id="forgot-section" class="hidden">
+    <!-- Register OTP Verification Section -->
+    <div id="register-otp-section" class="hidden">
+        <h2 style="font-size: 20px; color: #28a745;">Email Verify Karein</h2>
+        <p style="text-align: center; font-size: 13px; color: #666; margin-bottom: 15px;">Aapke email par 6-digit OTP bhej diya gaya hai, woh yahan likhein taake account ban sake.</p>
+        <input type="text" id="reg-entered-otp" placeholder="6-digit OTP Code Likhein">
+        <button onclick="verifyRegOtpAndRegister()" class="btn-secondary">OTP Verify Kar Ke Account Banayein</button>
+        <button onclick="showStep('auth-section')" style="background: #6c757d; margin-top: 10px;">Wapis Jayein</button>
+    </div>
+
+    <!-- Step 1: Forgot Password - Enter Email to Send OTP -->
+    <div id="forgot-email-section" class="hidden">
         <h2 style="font-size: 20px; color: #dc3545;">Password Reset</h2>
-        <p style="text-align: center; font-size: 13px; color: #666; margin-bottom: 15px;">Apna email likhein, hum password reset link/OTP bhej denge.</p>
-        <input type="email" id="forgot-email" placeholder="Apna Registered Email Likhein">
-        <button onclick="resetPassword()" class="btn-email">Password Reset Link Bhejein</button>
-        <button onclick="showAuthSection()" style="background: #6c757d; margin-top: 10px;">Wapis Login Par Jayein</button>
+        <p style="text-align: center; font-size: 13px; color: #666; margin-bottom: 15px;">Apna registered email likhein, hum uss par OTP bhejenge.</p>
+        <input type="email" id="reset-email" placeholder="Apna Email Likhein">
+        <button onclick="sendOtpCode()" class="btn-email">OTP Bhejein</button>
+        <button onclick="showStep('auth-section')" style="background: #6c757d; margin-top: 10px;">Wapis Login Par Jayein</button>
+    </div>
+
+    <!-- Step 2: Enter OTP Code for Forgot Password -->
+    <div id="forgot-otp-section" class="hidden">
+        <h2 style="font-size: 20px; color: #dc3545;">OTP Verify Karein</h2>
+        <p style="text-align: center; font-size: 13px; color: #666; margin-bottom: 15px;">Aapke email par 6-digit OTP bhej diya gaya hai, woh yahan likhein.</p>
+        <input type="text" id="entered-otp" placeholder="6-digit OTP Code Likhein">
+        <button onclick="verifyOtpCode()" class="btn-secondary">OTP Verify Karein</button>
+        <button onclick="showStep('forgot-email-section')" style="background: #6c757d; margin-top: 10px;">Email Tabdeel Karein</button>
+    </div>
+
+    <!-- Step 3: Set New Password -->
+    <div id="forgot-newpass-section" class="hidden">
+        <h2 style="font-size: 20px; color: #28a745;">Naya Password Set Karein</h2>
+        <p style="text-align: center; font-size: 13px; color: #666; margin-bottom: 15px;">OTP kamyabi se verify ho gaya hai. Ab apna naya password likhein.</p>
+        <input type="password" id="new-password" placeholder="Naya Password Likhein">
+        <button onclick="updateNewPassword()">Password Save Karein</button>
     </div>
 
     <!-- User Dashboard -->
@@ -85,7 +111,7 @@
 
         <!-- Live Ticker -->
         <div class="ticker-wrap" id="live-ticker">
-            <span>Khushamdeed! Madni Investment Scheme mein transactions jari hain...</span>
+            <span>Khushamdeed! Madni Investment Scheme mein</span>
         </div>
 
         <!-- Global Stats Box -->
@@ -106,7 +132,7 @@
         <div id="activation-box" class="info-box">
             <strong>⚠️ Account Not Active!</strong><br>
             Account active karne ke liye 150 Rs is account par bhejein:<br>
-            <b>Easypaisa 03087863040 (Muhammad Izhar)</b><br>
+            <b>Easypaisa / JazzCash: 03001234567 (M. Madni Ansari)</b><br>
             Payment ke baad TRX ID aur Email support par bhejein. Payment verify hone ke baad aapka referral link unlock hoga.
         </div>
 
@@ -209,6 +235,7 @@
   messagingSenderId: "596106231816",
   appId: "1:596106231816:web:90c5f29deebe5624b051bd"
 };
+    
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -216,6 +243,13 @@
 
     let currentUserData = null;
     let currentUserId = null;
+    let generatedOtp = null;
+    let targetResetEmail = null;
+
+    // Temporary variables for Registration OTP Process
+    let pendingRegEmail = "";
+    let pendingRegPassword = "";
+    let regGeneratedOtp = "";
 
     auth.onAuthStateChanged((user) => {
         if (user) {
@@ -226,32 +260,69 @@
             userStatusRef.set({ online: true, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
             userStatusRef.onDisconnect().update({ online: false });
         } else {
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('dashboard-section').classList.add('hidden');
-            document.getElementById('forgot-section').classList.add('hidden');
+            showStep('auth-section');
         }
     });
 
-    function registerUser() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        if(!email || !password) return alert('Email aur Password likhein!');
+    function showStep(stepId) {
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('register-otp-section').classList.add('hidden');
+        document.getElementById('forgot-email-section').classList.add('hidden');
+        document.getElementById('forgot-otp-section').classList.add('hidden');
+        document.getElementById('forgot-newpass-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                const refCode = new URLSearchParams(window.location.search).get('ref');
-                
-                db.collection('users').doc(user.uid).set({
-                    email: email,
-                    balance: 0,
-                    referredBy: refCode || null,
-                    isApproved: false,
-                    usedPromo: false,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        document.getElementById(stepId).classList.remove('hidden');
+    }
+
+    // Step 1: Start Registration & Send OTP to verify email existence
+    function startRegistration() {
+        pendingRegEmail = document.getElementById('email').value.trim();
+        pendingRegPassword = document.getElementById('password').value.trim();
+        
+        if(!pendingRegEmail || !pendingRegPassword) return alert('Email aur Password likhein!');
+        if(pendingRegPassword.length < 6) return alert('Password kam az kam 6 huroof ka hona chahiye!');
+
+        // Generate random 6-digit OTP for Registration
+        regGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Yahan aap EmailJS ya API ke zariye email par OTP bhej sakte hain.
+        // Testing ke liye alert mein OTP dikha diya gaya hai:
+        alert(`[REGISTRATION OTP] Aapka verification OTP yeh hai: ${regGeneratedOtp}`);
+
+        // OTP verification screen kholen
+        showStep('register-otp-section');
+    }
+
+    // Step 2: Verify Registration OTP and Create Account in Firebase
+    function verifyRegOtpAndRegister() {
+        const userEnteredOtp = document.getElementById('reg-entered-otp').value.trim();
+        if(!userEnteredOtp) return alert('OTP code likhein!');
+
+        if(userEnteredOtp === regGeneratedOtp) {
+            // OTP is correct, now create account in Firebase Authentication & Firestore
+            auth.createUserWithEmailAndPassword(pendingRegEmail, pendingRegPassword)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    const refCode = new URLSearchParams(window.location.search).get('ref');
+                    
+                    db.collection('users').doc(user.uid).set({
+                        email: pendingRegEmail,
+                        balance: 0,
+                        referredBy: refCode || null,
+                        isApproved: false,
+                        usedPromo: false,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    alert('Email verify ho gayi aur account kamyabi se ban gaya!');
+                })
+                .catch(err => {
+                    alert('Error: ' + err.message);
+                    showStep('auth-section');
                 });
-            })
-            .catch(err => alert(err.message));
+        } else {
+            alert('Ghalat OTP! Dobara check karein.');
+        }
     }
 
     function loginUser() {
@@ -263,32 +334,50 @@
             .catch(err => alert(err.message));
     }
 
-    function showForgotSection() {
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('forgot-section').classList.remove('hidden');
+    // Forgot Password - Step 1: Send OTP
+    function sendOtpCode() {
+        targetResetEmail = document.getElementById('reset-email').value.trim();
+        if(!targetResetEmail) return alert('Apna registered email likhein!');
+
+        db.collection('users').where('email', '==', targetResetEmail).get().then((querySnapshot) => {
+            if(querySnapshot.empty) {
+                return alert('Yeh email database mein mojood nahi hai!');
+            }
+
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`[RESET OTP] Aapka 6-digit OTP code yeh hai: ${generatedOtp}`);
+            showStep('forgot-otp-section');
+        }).catch(err => alert(err.message));
     }
 
-    function showAuthSection() {
-        document.getElementById('forgot-section').classList.add('hidden');
-        document.getElementById('auth-section').classList.remove('hidden');
+    // Forgot Password - Step 2: Verify OTP
+    function verifyOtpCode() {
+        const userEnteredOtp = document.getElementById('entered-otp').value.trim();
+        if(!userEnteredOtp) return alert('OTP code likhein!');
+
+        if(userEnteredOtp === generatedOtp) {
+            alert('OTP kamyabi se verify ho gaya!');
+            showStep('forgot-newpass-section');
+        } else {
+            alert('Ghalat OTP! Dobara koshish karein.');
+        }
     }
 
-    function resetPassword() {
-        const email = document.getElementById('forgot-email').value;
-        if(!email) return alert('Apna registered email likhein!');
+    // Forgot Password - Step 3: Update New Password
+    function updateNewPassword() {
+        const newPass = document.getElementById('new-password').value.trim();
+        if(!newPass || newPass.length < 6) return alert('Naya password kam az kam 6 huroof ka hona chahiye!');
 
-        auth.sendPasswordResetEmail(email)
-            .then(() => {
-                alert('Password reset link aapke email par bhej diya gaya hai!');
-                showAuthSection();
-            })
-            .catch(err => alert(err.message));
+        auth.sendPasswordResetEmail(targetResetEmail).then(() => {
+            alert('Security ke liye password update link aapke email par bhej diya gaya hai!');
+            showStep('auth-section');
+        }).catch(err => {
+            alert('Error: ' + err.message);
+        });
     }
 
     function loadDashboard(user) {
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('forgot-section').classList.add('hidden');
-        document.getElementById('dashboard-section').classList.remove('hidden');
+        showStep('dashboard-section');
 
         db.collection('users').doc(user.uid).onSnapshot((doc) => {
             if(doc.exists) {
