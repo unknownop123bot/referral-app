@@ -89,7 +89,7 @@
         <div id="activation-box" class="info-box">
             <strong>⚠️ Account Not Active!</strong><br>
             Account active karne ke liye 150 Rs is account par bhejein:<br>
-            <b>Easypaisa 03087863040 (Muhammad Izhar)</b><br>
+            <b>Easypaisa / JazzCash: 03001234567 (M. Madni Ansari)</b><br>
             Payment ke baad TRX ID aur Email support par bhejein. Payment verify hone ke baad aapka referral link unlock hoga.
         </div>
 
@@ -100,8 +100,8 @@
             <button onclick="copyLink()" class="btn-secondary" style="padding: 8px; font-size: 14px;">Link Copy Karein</button>
         </div>
 
-        <!-- Promo Code Section -->
-        <div style="background: #fdfefe; border: 1px dashed #28a745; padding: 12px; border-radius: 6px; margin-top: 15px;">
+        <!-- Promo Code Section (Visible ONLY to Active Accounts) -->
+        <div id="promo-box" class="hidden" style="background: #fdfefe; border: 1px dashed #28a745; padding: 12px; border-radius: 6px; margin-top: 15px;">
             <h4 style="font-size: 14px; color: #28a745; margin-bottom: 5px;">Promo Code</h4>
             <input type="text" id="promo-input" placeholder="Enter Promo Code">
             <button onclick="claimPromo()" style="background: #28a745; margin-top: 5px; padding: 10px; font-size: 14px;">Win Bonus</button>
@@ -130,7 +130,6 @@
                 <button type="button" class="btn-email">Email Support Par Raabta Karein</button>
             </a>
             
-            <!-- WhatsApp Group Button -->
             <a href="https://chat.whatsapp.com/Jv1CAXE3ff3FkLrolUbLAc?s=cl&p=a&ilr=4" target="_blank" style="text-decoration: none;">
                 <button type="button" class="btn-whatsapp">Join WhatsApp Group</button>
             </a>
@@ -201,7 +200,6 @@
     let currentUserData = null;
     let currentUserId = null;
 
-    // Check Login State & Real-time Presence
     auth.onAuthStateChanged((user) => {
         if (user) {
             currentUserId = user.uid;
@@ -216,7 +214,6 @@
         }
     });
 
-    // Register User
     function registerUser() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -239,7 +236,6 @@
             .catch(err => alert(err.message));
     }
 
-    // Login User
     function loginUser() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -249,7 +245,6 @@
             .catch(err => alert(err.message));
     }
 
-    // Load Dashboard
     function loadDashboard(user) {
         document.getElementById('auth-section').classList.add('hidden');
         document.getElementById('dashboard-section').classList.remove('hidden');
@@ -264,9 +259,15 @@
                     document.getElementById('ref-link').value = refURL;
                     document.getElementById('ref-box').classList.remove('hidden');
                     document.getElementById('activation-box').classList.add('hidden');
+                    
+                    // Show Promo Code box only if account is active/approved
+                    document.getElementById('promo-box').classList.remove('hidden');
                 } else {
                     document.getElementById('ref-box').classList.add('hidden');
                     document.getElementById('activation-box').classList.remove('hidden');
+                    
+                    // Hide Promo Code box if account is not active
+                    document.getElementById('promo-box').classList.add('hidden');
                 }
             }
         });
