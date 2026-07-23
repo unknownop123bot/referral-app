@@ -18,6 +18,8 @@
         .btn-email:hover { background: #c82333; }
         .btn-whatsapp { background: #25d366; margin-top: 8px; }
         .btn-whatsapp:hover { background: #1ebe5d; }
+        .btn-link { background: none; color: #007bff; border: none; font-size: 13px; cursor: pointer; margin-top: 5px; text-decoration: underline; width: auto; font-weight: normal; padding: 0; }
+        .btn-link:hover { color: #0056b3; background: none; }
         .info-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 4px; margin: 15px 0; font-size: 13px; color: #856404; }
         .active-box { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
         .balance-box { background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
@@ -46,14 +48,29 @@
 <body>
 
 <div class="card">
-    <!-- Auth Section (Signup / Login) -->
+    <!-- Auth Section (Signup / Login / Forgot Password) -->
     <div id="auth-section">
         <h2 style="font-size: 22px; color: #007bff;">Madni Investment Scheme</h2>
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">Account Banayein Ya Login Karein</p>
+        
         <input type="email" id="email" placeholder="Apna Email Likhein">
         <input type="password" id="password" placeholder="Password Likhein">
+        
         <button onclick="registerUser()">Account Banayein (Register)</button>
         <button onclick="loginUser()" class="btn-secondary">Login Karein</button>
+        
+        <div style="text-align: center; margin-top: 10px;">
+            <button onclick="showForgotSection()" class="btn-link">Password Bhool Gaye? (Forgot Password)</button>
+        </div>
+    </div>
+
+    <!-- Forgot Password Section -->
+    <div id="forgot-section" class="hidden">
+        <h2 style="font-size: 20px; color: #dc3545;">Password Reset</h2>
+        <p style="text-align: center; font-size: 13px; color: #666; margin-bottom: 15px;">Apna email likhein, hum password reset link/OTP bhej denge.</p>
+        <input type="email" id="forgot-email" placeholder="Apna Registered Email Likhein">
+        <button onclick="resetPassword()" class="btn-email">Password Reset Link Bhejein</button>
+        <button onclick="showAuthSection()" style="background: #6c757d; margin-top: 10px;">Wapis Login Par Jayein</button>
     </div>
 
     <!-- User Dashboard -->
@@ -68,7 +85,7 @@
 
         <!-- Live Ticker -->
         <div class="ticker-wrap" id="live-ticker">
-            <span>Khushamdeed! Madni Investment Scheme mein laikin transactions jari hain...</span>
+            <span>Khushamdeed! Madni Investment Scheme mein transactions jari hain...</span>
         </div>
 
         <!-- Global Stats Box -->
@@ -211,6 +228,7 @@
         } else {
             document.getElementById('auth-section').classList.remove('hidden');
             document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('forgot-section').classList.add('hidden');
         }
     });
 
@@ -245,8 +263,31 @@
             .catch(err => alert(err.message));
     }
 
+    function showForgotSection() {
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('forgot-section').classList.remove('hidden');
+    }
+
+    function showAuthSection() {
+        document.getElementById('forgot-section').classList.add('hidden');
+        document.getElementById('auth-section').classList.remove('hidden');
+    }
+
+    function resetPassword() {
+        const email = document.getElementById('forgot-email').value;
+        if(!email) return alert('Apna registered email likhein!');
+
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                alert('Password reset link aapke email par bhej diya gaya hai!');
+                showAuthSection();
+            })
+            .catch(err => alert(err.message));
+    }
+
     function loadDashboard(user) {
         document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('forgot-section').classList.add('hidden');
         document.getElementById('dashboard-section').classList.remove('hidden');
 
         db.collection('users').doc(user.uid).onSnapshot((doc) => {
@@ -259,14 +300,10 @@
                     document.getElementById('ref-link').value = refURL;
                     document.getElementById('ref-box').classList.remove('hidden');
                     document.getElementById('activation-box').classList.add('hidden');
-                    
-                    // Show Promo Code box only if account is active/approved
                     document.getElementById('promo-box').classList.remove('hidden');
                 } else {
                     document.getElementById('ref-box').classList.add('hidden');
                     document.getElementById('activation-box').classList.remove('hidden');
-                    
-                    // Hide Promo Code box if account is not active
                     document.getElementById('promo-box').classList.add('hidden');
                 }
             }
