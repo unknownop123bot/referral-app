@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M. Madni Ansari Pro Max</title>
+    <title>Madni Investment Scheme</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -16,6 +16,8 @@
         .btn-secondary:hover { background: #0056b3; }
         .btn-email { background: #dc3545; margin-top: 8px; }
         .btn-email:hover { background: #c82333; }
+        .btn-whatsapp { background: #25d366; margin-top: 8px; }
+        .btn-whatsapp:hover { background: #1ebe5d; }
         .info-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 4px; margin: 15px 0; font-size: 13px; color: #856404; }
         .active-box { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
         .balance-box { background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; }
@@ -23,17 +25,22 @@
         .hidden { display: none; }
         .support-section { border-top: 1px solid #eee; margin-top: 20px; padding-top: 15px; text-align: center; }
         
+        /* Ticker & Stats */
+        .ticker-wrap { background: #343a40; color: #fff; padding: 8px; font-size: 13px; border-radius: 6px; margin-bottom: 15px; overflow: hidden; white-space: nowrap; text-align: center; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: #f8f9fa; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #ddd; font-size: 12px; color: #333; }
+        .stat-card span { font-weight: bold; color: #007bff; display: block; font-size: 14px; margin-top: 3px; }
+
         /* Menu & Navigation Styles */
         .dashboard-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .menu-btn { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; width: auto; margin-top: 0; }
-        .menu-btn:hover { background: #0056b3; }
-        .side-menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; border-radius: 12px; z-index: 20; padding: 25px; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .side-menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; border-radius: 12px; z-index: 20; padding: 25px; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-y: auto; }
         .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .close-menu { cursor: pointer; font-size: 22px; color: #dc3545; font-weight: bold; }
         .menu-item { padding: 12px; background: #f8f9fa; margin-bottom: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #007bff; text-align: center; border: 1px solid #ddd; }
         .menu-item:hover { background: #e9ecef; }
         .sub-section { display: none; margin-top: 15px; }
-        .history-item, .team-item { background: #f8f9fa; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid #007bff; font-size: 13px; text-align: left; }
+        .history-item, .team-item, .tx-item, .leader-item { background: #f8f9fa; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid #007bff; font-size: 13px; text-align: left; }
     </style>
 </head>
 <body>
@@ -41,7 +48,7 @@
 <div class="card">
     <!-- Auth Section (Signup / Login) -->
     <div id="auth-section">
-        <h2>M. Madni Ansari Pro Max</h2>
+        <h2 style="font-size: 22px; color: #007bff;">Madni Investment Scheme</h2>
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">Account Banayein Ya Login Karein</p>
         <input type="email" id="email" placeholder="Apna Email Likhein">
         <input type="password" id="password" placeholder="Password Likhein">
@@ -51,10 +58,25 @@
 
     <!-- User Dashboard -->
     <div id="dashboard-section" class="hidden">
+        <h3 style="text-align: center; color: #007bff; margin-bottom: 5px; font-size: 18px;">Madni Investment Scheme</h3>
+        
         <!-- Dashboard Header with 3 Lines Menu Button -->
         <div class="dashboard-header">
             <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
-            <h2 style="margin: 0; font-size: 20px;">Aapka Dashboard</h2>
+            <h2 style="margin: 0; font-size: 18px;">Aapka Dashboard</h2>
+        </div>
+
+        <!-- Live Ticker -->
+        <div class="ticker-wrap" id="live-ticker">
+            <span>Khushamdeed! Madni Investment Scheme mein laikin transactions jari hain...</span>
+        </div>
+
+        <!-- Global Stats Box -->
+        <div class="stats-grid">
+            <div class="stat-card">Total Users <span id="stat-users">0</span></div>
+            <div class="stat-card">Online Users <span id="stat-online">1</span></div>
+            <div class="stat-card">Total Investment <span id="stat-investment">Rs. 0</span></div>
+            <div class="stat-card">Total Withdrawal <span id="stat-withdrawal">Rs. 0</span></div>
         </div>
         
         <div class="balance-box">
@@ -78,6 +100,14 @@
             <button onclick="copyLink()" class="btn-secondary" style="padding: 8px; font-size: 14px;">Link Copy Karein</button>
         </div>
 
+        <!-- Promo Code Section -->
+        <div style="background: #fdfefe; border: 1px dashed #28a745; padding: 12px; border-radius: 6px; margin-top: 15px;">
+            <h4 style="font-size: 14px; color: #28a745; margin-bottom: 5px;">Promo Code</h4>
+            <input type="text" id="promo-input" placeholder="Enter Promo Code">
+            <button onclick="claimPromo()" style="background: #28a745; margin-top: 5px; padding: 10px; font-size: 14px;">Win Bonus</button>
+            <small style="display: block; text-align: center; color: #666; margin-top: 4px; font-size: 11px;">1-5rs daily randomly bonus</small>
+        </div>
+
         <!-- Withdrawal Section -->
         <div style="margin-top: 20px;">
             <h3 style="font-size: 16px; margin-bottom: 10px;">Withdrawal Request</h3>
@@ -99,6 +129,12 @@
             <a href="mailto:madniofficial123@gmail.com?subject=Referral%20Website%20Support" style="text-decoration: none;">
                 <button type="button" class="btn-email">Email Support Par Raabta Karein</button>
             </a>
+            
+            <!-- WhatsApp Group Button -->
+            <a href="https://whatsapp.com/your-group-link-here" target="_blank" style="text-decoration: none;">
+                <button type="button" class="btn-whatsapp">Join WhatsApp Group</button>
+            </a>
+
             <p style="font-size: 12px; margin-top: 8px; color: #555;"><b>Email:</b> madniofficial123@gmail.com</p>
         </div>
 
@@ -113,22 +149,32 @@
         </div>
         <div class="menu-item" onclick="showSubSection('history-section')">Withdrawal / Deposit History</div>
         <div class="menu-item" onclick="showSubSection('team-section')">My Team (Referrals)</div>
+        <div class="menu-item" onclick="showSubSection('transaction-section')">All Transactions Details</div>
+        <div class="menu-item" onclick="showSubSection('leaderboard-section')">Leaderboard</div>
         <div class="menu-item" onclick="toggleMenu()" style="background: #6c757d; color: white;">Wapis Dashboard Par</div>
 
         <!-- History Sub-Section -->
         <div id="history-section" class="sub-section">
             <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">History</h4>
-            <div id="history-container" style="max-height: 250px; overflow-y: auto;">
-                <p style="color: #777; font-size: 12px;">Koi history mojood nahi hai.</p>
-            </div>
+            <div id="history-container"><p style="color: #777; font-size: 12px;">Koi history mojood nahi hai.</p></div>
         </div>
 
         <!-- Team Sub-Section -->
         <div id="team-section" class="sub-section">
             <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">Aapki Team Members</h4>
-            <div id="team-container" style="max-height: 250px; overflow-y: auto;">
-                <p style="color: #777; font-size: 12px;">Abhi koi team member nahi hai.</p>
-            </div>
+            <div id="team-container"><p style="color: #777; font-size: 12px;">Abhi koi team member nahi hai.</p></div>
+        </div>
+
+        <!-- Transactions Sub-Section -->
+        <div id="transaction-section" class="sub-section">
+            <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">All Transactions</h4>
+            <div id="tx-container"><p style="color: #777; font-size: 12px;">Koi transaction mojood nahi hai.</p></div>
+        </div>
+
+        <!-- Leaderboard Sub-Section -->
+        <div id="leaderboard-section" class="sub-section">
+            <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">Top Earners / Leaderboard</h4>
+            <div id="leaderboard-container"><p style="font-size: 12px;">Leaderboard load ho raha hai...</p></div>
         </div>
     </div>
 </div>
@@ -140,13 +186,13 @@
 
 <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyCpdQsb_bol0P021RtPK3ni_KjeumZH6Wg",
-  authDomain: "referral-app-e5ee6.firebaseapp.com",
-  projectId: "referral-app-e5ee6",
-  storageBucket: "referral-app-e5ee6.firebasestorage.app",
-  messagingSenderId: "596106231816",
-  appId: "1:596106231816:web:90c5f29deebe5624b051bd"
-};
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -155,11 +201,15 @@
     let currentUserData = null;
     let currentUserId = null;
 
-    // Check Login State
+    // Check Login State & Real-time Presence
     auth.onAuthStateChanged((user) => {
         if (user) {
             currentUserId = user.uid;
             loadDashboard(user);
+            
+            const userStatusRef = db.collection('status').doc(user.uid);
+            userStatusRef.set({ online: true, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
+            userStatusRef.onDisconnect().update({ online: false });
         } else {
             document.getElementById('auth-section').classList.remove('hidden');
             document.getElementById('dashboard-section').classList.add('hidden');
@@ -182,6 +232,7 @@
                     balance: 0,
                     referredBy: refCode || null,
                     isApproved: false,
+                    usedPromo: false,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
             })
@@ -203,7 +254,6 @@
         document.getElementById('auth-section').classList.add('hidden');
         document.getElementById('dashboard-section').classList.remove('hidden');
 
-        // Realtime Balance & Security Check
         db.collection('users').doc(user.uid).onSnapshot((doc) => {
             if(doc.exists) {
                 currentUserData = doc.data();
@@ -221,60 +271,136 @@
             }
         });
 
-        // Load Withdrawal History
-        db.collection('withdrawals')
-            .where('userId', '==', user.uid)
-            .onSnapshot((snapshot) => {
-                const historyContainer = document.getElementById('history-container');
-                historyContainer.innerHTML = '';
-
-                if (snapshot.empty) {
-                    historyContainer.innerHTML = '<p style="color: #777; font-size: 12px;">Koi request mojood nahi hai.</p>';
-                    return;
-                }
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    let statusColor = data.status === 'approved' ? 'green' : (data.status === 'rejected' ? 'red' : 'orange');
-                    
-                    historyContainer.innerHTML += `
-                        <div class="history-item">
-                            <b>${data.method}:</b> Rs. ${data.amount} (${data.accName})<br>
-                            <small>Account: ${data.account}</small><br>
-                            <small>Status: <span style="color: ${statusColor}; font-weight: bold;">${data.status.toUpperCase()}</span></small>
-                        </div>
-                    `;
-                });
+        db.collection('users').onSnapshot((snapshot) => {
+            document.getElementById('stat-users').innerText = snapshot.size;
+            
+            let usersList = [];
+            snapshot.forEach(doc => usersList.push(doc.data()));
+            usersList.sort((a, b) => b.balance - a.balance);
+            
+            let lbHTML = '';
+            usersList.slice(0, 10).forEach((u, index) => {
+                lbHTML += `<div class="leader-item"><b>#${index+1} ${u.email}</b> - Balance: Rs. ${u.balance}</div>`;
             });
+            document.getElementById('leaderboard-container').innerHTML = lbHTML || '<p style="font-size:12px;">No data</p>';
+        });
 
-        // Load My Team (Referrals)
-        db.collection('users')
-            .where('referredBy', '==', user.uid)
-            .onSnapshot((snapshot) => {
-                const teamContainer = document.getElementById('team-container');
-                teamContainer.innerHTML = '';
+        db.collection('status').where('online', '==', true).onSnapshot((snapshot) => {
+            document.getElementById('stat-online').innerText = snapshot.size;
+        });
 
-                if (snapshot.empty) {
-                    teamContainer.innerHTML = '<p style="color: #777; font-size: 12px;">Abhi koi team member nahi hai.</p>';
-                    return;
-                }
-
-                snapshot.forEach((doc) => {
-                    const member = doc.data();
-                    let joinDate = member.timestamp ? member.timestamp.toDate().toLocaleDateString() : 'N/A';
-                    
-                    teamContainer.innerHTML += `
-                        <div class="team-item">
-                            <b>Email:</b> ${member.email}<br>
-                            <b>Joining Date:</b> ${joinDate}<br>
-                            <b>Status:</b> ${member.isApproved ? '<span style="color:green;">Active</span>' : '<span style="color:orange;">Not Active</span>'}
-                        </div>
-                    `;
-                });
+        db.collection('withdrawals').onSnapshot((snapshot) => {
+            let totalW = 0;
+            snapshot.forEach(doc => {
+                if(doc.data().status === 'approved') totalW += doc.data().amount;
             });
+            document.getElementById('stat-withdrawal').innerText = 'Rs. ' + totalW;
+        });
+
+        db.collection('withdrawals').where('userId', '==', user.uid).onSnapshot((snapshot) => {
+            const historyContainer = document.getElementById('history-container');
+            historyContainer.innerHTML = '';
+            if (snapshot.empty) {
+                historyContainer.innerHTML = '<p style="color: #777; font-size: 12px;">Koi request mojood nahi hai.</p>';
+                return;
+            }
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                let statusColor = data.status === 'approved' ? 'green' : (data.status === 'rejected' ? 'red' : 'orange');
+                historyContainer.innerHTML += `
+                    <div class="history-item">
+                        <b>${data.method}:</b> Rs. ${data.amount} (${data.accName})<br>
+                        <small>Status: <span style="color: ${statusColor}; font-weight: bold;">${data.status.toUpperCase()}</span></small>
+                    </div>
+                `;
+            });
+        });
+
+        db.collection('users').where('referredBy', '==', user.uid).onSnapshot((snapshot) => {
+            const teamContainer = document.getElementById('team-container');
+            teamContainer.innerHTML = '';
+            if (snapshot.empty) {
+                teamContainer.innerHTML = '<p style="color: #777; font-size: 12px;">Abhi koi team member nahi hai.</p>';
+                return;
+            }
+            snapshot.forEach((doc) => {
+                const member = doc.data();
+                let joinDate = member.timestamp ? member.timestamp.toDate().toLocaleDateString() : 'N/A';
+                teamContainer.innerHTML += `
+                    <div class="team-item">
+                        <b>Email:</b> ${member.email}<br>
+                        <b>Joining Date:</b> ${joinDate}<br>
+                        <b>Account Status:</b> ${member.isApproved ? '<span style="color:green; font-weight:bold;">Active</span>' : '<span style="color:orange; font-weight:bold;">Not Active</span>'}
+                    </div>
+                `;
+            });
+        });
+
+        db.collection('transactions').where('userId', '==', user.uid).onSnapshot((snapshot) => {
+            const txContainer = document.getElementById('tx-container');
+            txContainer.innerHTML = '';
+            if(snapshot.empty) {
+                txContainer.innerHTML = '<p style="color: #777; font-size: 12px;">Koi transaction mojood nahi hai.</p>';
+                return;
+            }
+            snapshot.forEach(doc => {
+                let tx = doc.data();
+                txContainer.innerHTML += `
+                    <div class="tx-item">
+                        <b>Type:</b> ${tx.type}<br>
+                        <b>Amount:</b> Rs. ${tx.amount}<br>
+                        <small>Detail: ${tx.detail}</small>
+                    </div>
+                `;
+            });
+        });
+
+        db.collection('transactions').orderBy('timestamp', 'desc').limit(5).onSnapshot((snapshot) => {
+            let tickerText = "";
+            snapshot.forEach(doc => {
+                let t = doc.data();
+                tickerText += `🚀 ${t.email} ne ${t.type} kiye Rs. ${t.amount} &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; `;
+            });
+            if(tickerText) {
+                document.getElementById('live-ticker').innerHTML = `<span>${tickerText}</span>`;
+            }
+        });
     }
 
-    // Toggle Side Menu
+    function claimPromo() {
+        const codeInput = document.getElementById('promo-input').value.trim();
+        if(!codeInput) return alert('Promo code likhein!');
+
+        db.collection('settings').doc('promo').get().then((doc) => {
+            if(doc.exists && doc.data().activeCode === codeInput) {
+                if(currentUserData.usedPromo === true) {
+                    return alert('Aap yeh promo code pehle hi use kar chuke hain!');
+                }
+
+                const randomBonus = Math.floor(Math.random() * 5) + 1;
+
+                db.collection('users').doc(currentUserId).update({
+                    balance: currentUserData.balance + randomBonus,
+                    usedPromo: true
+                });
+
+                db.collection('transactions').add({
+                    userId: currentUserId,
+                    email: currentUserData.email,
+                    type: 'Promo Bonus',
+                    amount: randomBonus,
+                    detail: `Used promo code: ${codeInput}`,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert(`Mubarak ho! Aapko Rs. ${randomBonus} ka bonus mila hai.`);
+                document.getElementById('promo-input').value = '';
+            } else {
+                alert('Ghalat ya expired promo code!');
+            }
+        });
+    }
+
     function toggleMenu() {
         const menu = document.getElementById('side-menu');
         if (menu.style.display === 'block') {
@@ -283,17 +409,19 @@
             menu.style.display = 'block';
             document.getElementById('history-section').style.display = 'none';
             document.getElementById('team-section').style.display = 'none';
+            document.getElementById('transaction-section').style.display = 'none';
+            document.getElementById('leaderboard-section').style.display = 'none';
         }
     }
 
-    // Show Sub-Sections inside Menu
     function showSubSection(sectionId) {
         document.getElementById('history-section').style.display = 'none';
         document.getElementById('team-section').style.display = 'none';
+        document.getElementById('transaction-section').style.display = 'none';
+        document.getElementById('leaderboard-section').style.display = 'none';
         document.getElementById(sectionId).style.display = 'block';
     }
 
-    // Withdrawal Request
     function requestWithdrawal() {
         const amount = parseInt(document.getElementById('withdraw-amount').value);
         const method = document.getElementById('withdraw-method').value;
@@ -301,14 +429,8 @@
         const account = document.getElementById('withdraw-account').value;
 
         if(!amount || !accName || !account) return alert('Tamam details enter karein!');
-        
-        if(amount < 300) {
-            return alert('Ghalti: Minimum withdrawal limit Rs. 300 hai!');
-        }
-
-        if(amount > currentUserData.balance) {
-            return alert('Ghalti: Aapka balance kam hai!');
-        }
+        if(amount < 300) return alert('Minimum withdrawal limit Rs. 300 hai!');
+        if(amount > currentUserData.balance) return alert('Aapka balance kam hai!');
 
         db.collection('withdrawals').add({
             userId: auth.currentUser.uid,
@@ -322,6 +444,14 @@
         }).then(() => {
             db.collection('users').doc(auth.currentUser.uid).update({
                 balance: currentUserData.balance - amount
+            });
+            db.collection('transactions').add({
+                userId: auth.currentUser.uid,
+                email: currentUserData.email,
+                type: 'Withdrawal',
+                amount: amount,
+                detail: `Via ${method} (${account})`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             alert('Withdrawal Request bhej di gayi hai!');
             document.getElementById('withdraw-amount').value = '';
@@ -339,6 +469,9 @@
     }
 
     function logout() {
+        if(currentUserId) {
+            db.collection('status').doc(currentUserId).update({ online: false });
+        }
         auth.signOut();
     }
 </script>
