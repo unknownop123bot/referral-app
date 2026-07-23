@@ -44,6 +44,13 @@
         .sub-section { display: none; margin-top: 15px; }
         .history-item, .team-item, .tx-item, .leader-item { background: #f8f9fa; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid #007bff; font-size: 13px; text-align: left; }
     </style>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("YdSsqfkMHjmj_lhcb"); // Updated Public Key
+        })();
+    </script>
 </head>
 <body>
 
@@ -174,7 +181,7 @@
             </a>
             
             <a href="https://chat.whatsapp.com/Jv1CAXE3ff3FkLrolUbLAc?s=cl&p=a&ilr=4" target="_blank" style="text-decoration: none;">
-                <button type="button" class="btn-whatsapp">Join WhatsApp Group</button>
+                <button type="button" class="btn-whatsapp">Join WhatsApp Group For Updates</button>
             </a>
 
             <p style="font-size: 12px; margin-top: 8px; color: #555;"><b>Email:</b> madniofficial123@gmail.com</p>
@@ -235,8 +242,6 @@
   messagingSenderId: "596106231816",
   appId: "1:596106231816:web:90c5f29deebe5624b051bd"
 };
-    
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -246,7 +251,6 @@
     let generatedOtp = null;
     let targetResetEmail = null;
 
-    // Temporary variables for Registration OTP Process
     let pendingRegEmail = "";
     let pendingRegPassword = "";
     let regGeneratedOtp = "";
@@ -275,7 +279,7 @@
         document.getElementById(stepId).classList.remove('hidden');
     }
 
-    // Step 1: Start Registration & Send OTP to verify email existence
+    // Start Registration & Send Real OTP via EmailJS
     function startRegistration() {
         pendingRegEmail = document.getElementById('email').value.trim();
         pendingRegPassword = document.getElementById('password').value.trim();
@@ -283,24 +287,30 @@
         if(!pendingRegEmail || !pendingRegPassword) return alert('Email aur Password likhein!');
         if(pendingRegPassword.length < 6) return alert('Password kam az kam 6 huroof ka hona chahiye!');
 
-        // Generate random 6-digit OTP for Registration
         regGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        // Yahan aap EmailJS ya API ke zariye email par OTP bhej sakte hain.
-        // Testing ke liye alert mein OTP dikha diya gaya hai:
-        alert(`[REGISTRATION OTP] Aapka verification OTP yeh hai: ${regGeneratedOtp}`);
 
-        // OTP verification screen kholen
-        showStep('register-otp-section');
+        // EmailJS template parameters (Template placeholders ke mutabiq keys match ki gayi hain)
+        const templateParams = {
+            email: pendingRegEmail,
+            otp_code: regGeneratedOtp
+        };
+
+        // Sending email via EmailJS with your Service ID & Template ID
+        emailjs.send('service_r6m1hdu', 'template_z6h0zso', templateParams)
+            .then(function(response) {
+                alert('OTP aapke email par bhej diya gaya hai! Apna email inbox check karein.');
+                showStep('register-otp-section');
+            }, function(error) {
+                alert('Email bhejne mein ghalti hui: ' + JSON.stringify(error));
+            });
     }
 
-    // Step 2: Verify Registration OTP and Create Account in Firebase
+    // Verify Registration OTP and Create Account
     function verifyRegOtpAndRegister() {
         const userEnteredOtp = document.getElementById('reg-entered-otp').value.trim();
         if(!userEnteredOtp) return alert('OTP code likhein!');
 
         if(userEnteredOtp === regGeneratedOtp) {
-            // OTP is correct, now create account in Firebase Authentication & Firestore
             auth.createUserWithEmailAndPassword(pendingRegEmail, pendingRegPassword)
                 .then((userCredential) => {
                     const user = userCredential.user;
@@ -334,7 +344,7 @@
             .catch(err => alert(err.message));
     }
 
-    // Forgot Password - Step 1: Send OTP
+    // Forgot Password - Send OTP via EmailJS
     function sendOtpCode() {
         targetResetEmail = document.getElementById('reset-email').value.trim();
         if(!targetResetEmail) return alert('Apna registered email likhein!');
@@ -345,12 +355,24 @@
             }
 
             generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            alert(`[RESET OTP] Aapka 6-digit OTP code yeh hai: ${generatedOtp}`);
-            showStep('forgot-otp-section');
+            
+            const templateParams = {
+                email: targetResetEmail,
+                otp_code: generatedOtp
+            };
+
+            emailjs.send('service_r6m1hdu', 'template_z6h0zso', templateParams)
+                .then(function(response) {
+                    alert('Reset OTP aapke email par bhej diya gaya hai!');
+                    showStep('forgot-otp-section');
+                }, function(error) {
+                    alert('Email bhejne mein ghalti hui: ' + JSON.stringify(error));
+                });
+
         }).catch(err => alert(err.message));
     }
 
-    // Forgot Password - Step 2: Verify OTP
+    // Forgot Password - Verify OTP
     function verifyOtpCode() {
         const userEnteredOtp = document.getElementById('entered-otp').value.trim();
         if(!userEnteredOtp) return alert('OTP code likhein!');
@@ -363,7 +385,7 @@
         }
     }
 
-    // Forgot Password - Step 3: Update New Password
+    // Forgot Password - Update New Password
     function updateNewPassword() {
         const newPass = document.getElementById('new-password').value.trim();
         if(!newPass || newPass.length < 6) return alert('Naya password kam az kam 6 huroof ka hona chahiye!');
