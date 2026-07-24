@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Madni Investment Scheme</title>
+    <title>M.Madni Ansari Pro Max</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
         body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -27,13 +27,11 @@
         .hidden { display: none; }
         .support-section { border-top: 1px solid #eee; margin-top: 20px; padding-top: 15px; text-align: center; }
         
-        /* Ticker & Stats */
         .ticker-wrap { background: #343a40; color: #fff; padding: 8px; font-size: 13px; border-radius: 6px; margin-bottom: 15px; overflow: hidden; white-space: nowrap; text-align: center; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .stat-card { background: #f8f9fa; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #ddd; font-size: 12px; color: #333; }
         .stat-card span { font-weight: bold; color: #007bff; display: block; font-size: 14px; margin-top: 3px; }
 
-        /* Menu & Navigation Styles */
         .dashboard-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .menu-btn { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; width: auto; margin-top: 0; }
         .side-menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; border-radius: 12px; z-index: 20; padding: 25px; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow-y: auto; }
@@ -57,7 +55,7 @@
 <div class="card">
     <!-- Auth Section (Signup / Login) -->
     <div id="auth-section">
-        <h2 style="font-size: 22px; color: #007bff;">Madni Investment Scheme</h2>
+        <h2 style="font-size: 22px; color: #007bff;">M.Madni Ansari Pro Max</h2>
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">Account Banayein Ya Login Karein</p>
         
         <input type="text" id="reg-username" placeholder="Apna Unique Username Likhein (e.g. madni123)">
@@ -109,20 +107,17 @@
 
     <!-- User Dashboard -->
     <div id="dashboard-section" class="hidden">
-        <h3 style="text-align: center; color: #007bff; margin-bottom: 5px; font-size: 18px;">Madni Investment Scheme</h3>
+        <h3 style="text-align: center; color: #007bff; margin-bottom: 5px; font-size: 18px;">M.Madni Ansari Pro Max</h3>
         
-        <!-- Dashboard Header with 3 Lines Menu Button -->
         <div class="dashboard-header">
             <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
             <h2 style="margin: 0; font-size: 18px;">Aapka Dashboard</h2>
         </div>
 
-        <!-- Live Ticker -->
         <div class="ticker-wrap" id="live-ticker">
-            <span>Khushamdeed! Madni Investment Scheme mein transactions jari hain...</span>
+            <span>Khushamdeed! M.Madni Ansari Pro Max Mein</span>
         </div>
 
-        <!-- Global Stats Box -->
         <div class="stats-grid">
             <div class="stat-card">Total Users <span id="stat-users">0</span></div>
             <div class="stat-card">Online Users <span id="stat-online">1</span></div>
@@ -136,22 +131,19 @@
             <small style="color: #666;">Minimum Withdrawal: Rs. 300</small>
         </div>
 
-        <!-- Unapproved User Warning / Deposit Info -->
         <div id="activation-box" class="info-box">
             <strong>⚠️ Account Not Active!</strong><br>
             Account active karne ke liye 150 Rs is account par bhejein:<br>
-            <b>Easypaisa / JazzCash: 03001234567 (M. Madni Ansari)</b><br>
+            <b>Easypaisa 03087863040 (Muhammad Izhar)</b><br>
             Payment ke baad TRX ID aur Email support par bhejein. Payment verify hone ke baad aapka referral link unlock hoga.
         </div>
 
-        <!-- Approved User Referral Link Section (Hidden by default) -->
         <div id="ref-box" class="info-box active-box hidden">
             <strong>✅ Account Active! Invite & Earn (100 Rs Per Friend):</strong><br>
             <input type="text" id="ref-link" readonly style="margin-top: 5px; background: #fff;">
             <button onclick="copyLink()" class="btn-secondary" style="padding: 8px; font-size: 14px;">Link Copy Karein</button>
         </div>
 
-        <!-- Promo Code Section (Visible ONLY to Active Accounts) -->
         <div id="promo-box" class="hidden" style="background: #fdfefe; border: 1px dashed #28a745; padding: 12px; border-radius: 6px; margin-top: 15px;">
             <h4 style="font-size: 14px; color: #28a745; margin-bottom: 5px;">Promo Code</h4>
             <input type="text" id="promo-input" placeholder="Enter Promo Code">
@@ -159,7 +151,6 @@
             <small style="display: block; text-align: center; color: #666; margin-top: 4px; font-size: 11px;">1-5rs daily randomly bonus</small>
         </div>
 
-        <!-- Withdrawal Section -->
         <div style="margin-top: 20px;">
             <h3 style="font-size: 16px; margin-bottom: 10px;">Withdrawal Request</h3>
             <select id="withdraw-method">
@@ -172,7 +163,6 @@
             <button onclick="requestWithdrawal()">Withdraw Request Bhejein</button>
         </div>
 
-        <!-- Customer Support Section -->
         <div class="support-section">
             <h4 style="font-size: 14px; color: #555;">Customer Support</h4>
             <p style="font-size: 12px; color: #777; margin-bottom: 8px;">TRX ID verification ya kisi maslay ke liye raabta karein:</p>
@@ -181,9 +171,13 @@
                 <button type="button" class="btn-email">Email Support Par Raabta Karein</button>
             </a>
             
-            <a href="https://whatsapp.com/your-group-link-here" target="_blank" style="text-decoration: none;">
-                <button type="button" class="btn-whatsapp">Join WhatsApp Group</button>
+            <a href="https://chat.whatsapp.com/Jv1CAXE3ff3FkLrolUbLAc?s=cl&p=a&ilr=4" target="_blank" style="text-decoration: none;">
+                <button type="button" class="btn-whatsapp">Join WhatsApp Group For Updates</button>
             </a>
+            <a href="https://whatsapp.com/channel/0029Vb8rfKP7tkjEhiFbtW2I" target="_blank" style="text-decoration: none;">
+    <button type="button" class="btn-whatsapp">Join WhatsApp Channel</button>
+            </a>
+            
 
             <p style="font-size: 12px; margin-top: 8px; color: #555;"><b>Email:</b> madniofficial123@gmail.com</p>
         </div>
@@ -203,25 +197,21 @@
         <div class="menu-item" onclick="showSubSection('leaderboard-section')">Leaderboard</div>
         <div class="menu-item" onclick="toggleMenu()" style="background: #6c757d; color: white;">Wapis Dashboard Par</div>
 
-        <!-- History Sub-Section -->
         <div id="history-section" class="sub-section">
             <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">History</h4>
             <div id="history-container"><p style="color: #777; font-size: 12px;">Koi history mojood nahi hai.</p></div>
         </div>
 
-        <!-- Team Sub-Section -->
         <div id="team-section" class="sub-section">
             <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">Aapki Team Members</h4>
             <div id="team-container"><p style="color: #777; font-size: 12px;">Abhi koi team member nahi hai.</p></div>
         </div>
 
-        <!-- Transactions Sub-Section -->
         <div id="transaction-section" class="sub-section">
             <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">All Transactions</h4>
             <div id="tx-container"><p style="color: #777; font-size: 12px;">Koi transaction mojood nahi hai.</p></div>
         </div>
 
-        <!-- Leaderboard Sub-Section -->
         <div id="leaderboard-section" class="sub-section">
             <h4 style="font-size: 14px; margin-bottom: 8px; color: #333;">Top Earners / Leaderboard</h4>
             <div id="leaderboard-container"><p style="font-size: 12px;">Leaderboard load ho raha hai...</p></div>
@@ -235,15 +225,15 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
-
+    
+const firebaseConfig = {
+  apiKey: "AIzaSyCpdQsb_bol0P021RtPK3ni_KjeumZH6Wg",
+  authDomain: "referral-app-e5ee6.firebaseapp.com",
+  projectId: "referral-app-e5ee6",
+  storageBucket: "referral-app-e5ee6.firebasestorage.app",
+  messagingSenderId: "596106231816",
+  appId: "1:596106231816:web:90c5f29deebe5624b051bd"
+};
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -261,7 +251,6 @@
 
     auth.onAuthStateChanged((user) => {
         if (user) {
-            // Find username associated with this user uid
             db.collection('users').where('uid', '==', user.uid).get().then((querySnapshot) => {
                 if(!querySnapshot.empty) {
                     currentUsername = querySnapshot.docs[0].id;
@@ -285,7 +274,6 @@
         document.getElementById(stepId).classList.remove('hidden');
     }
 
-    // Start Registration & Send Real OTP via EmailJS
     function startRegistration() {
         pendingRegUsername = document.getElementById('reg-username').value.trim().toLowerCase();
         pendingRegEmail = document.getElementById('email').value.trim();
@@ -294,7 +282,6 @@
         if(!pendingRegUsername || !pendingRegEmail || !pendingRegPassword) return alert('Username, Email aur Password sab likhein!');
         if(pendingRegPassword.length < 6) return alert('Password kam az kam 6 huroof ka hona chahiye!');
 
-        // Check if username already exists
         db.collection('users').doc(pendingRegUsername).get().then((doc) => {
             if(doc.exists) {
                 return alert('Yeh username pehle se istemal mein hai, koi aur naam chunein!');
@@ -312,12 +299,12 @@
                     alert('OTP aapke email par bhej diya gaya hai! Apna email inbox check karein.');
                     showStep('register-otp-section');
                 }, function(error) {
-                    alert('Email bhejne mein ghalti hui: ' + JSON.stringify(error));
+                    console.error('EmailJS Error:', error);
+                    alert('Email bhejne mein ghalti hui: ' + (error.text || JSON.stringify(error)));
                 });
         });
     }
 
-    // Verify Registration OTP and Create Account
     function verifyRegOtpAndRegister() {
         const userEnteredOtp = document.getElementById('reg-entered-otp').value.trim();
         if(!userEnteredOtp) return alert('OTP code likhein!');
@@ -328,7 +315,6 @@
                     const user = userCredential.user;
                     const refCode = new URLSearchParams(window.location.search).get('ref');
                     
-                    // Saving user data using custom username as Document ID
                     db.collection('users').doc(pendingRegUsername).set({
                         uid: user.uid,
                         email: pendingRegEmail,
@@ -339,7 +325,6 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
 
-                    // Set Online Status using auth uid
                     const userStatusRef = db.collection('status').doc(user.uid);
                     userStatusRef.set({ online: true, username: pendingRegUsername, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
                     userStatusRef.onDisconnect().update({ online: false });
@@ -363,7 +348,6 @@
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                // Update online status on login
                 db.collection('users').where('uid', '==', user.uid).get().then((snapshot) => {
                     if(!snapshot.empty) {
                         let uname = snapshot.docs[0].id;
@@ -375,7 +359,6 @@
             .catch(err => alert(err.message));
     }
 
-    // Forgot Password - Send OTP via EmailJS
     function sendOtpCode() {
         targetResetEmail = document.getElementById('reset-email').value.trim();
         if(!targetResetEmail) return alert('Apna registered email likhein!');
@@ -397,13 +380,13 @@
                     alert('Reset OTP aapke email par bhej diya gaya hai!');
                     showStep('forgot-otp-section');
                 }, function(error) {
-                    alert('Email bhejne mein ghalti hui: ' + JSON.stringify(error));
+                    console.error('EmailJS Error:', error);
+                    alert('Email bhejne mein ghalti hui: ' + (error.text || JSON.stringify(error)));
                 });
 
         }).catch(err => alert(err.message));
     }
 
-    // Forgot Password - Verify OTP
     function verifyOtpCode() {
         const userEnteredOtp = document.getElementById('entered-otp').value.trim();
         if(!userEnteredOtp) return alert('OTP code likhein!');
@@ -416,7 +399,6 @@
         }
     }
 
-    // Forgot Password - Update New Password
     function updateNewPassword() {
         const newPass = document.getElementById('new-password').value.trim();
         if(!newPass || newPass.length < 6) return alert('Naya password kam az kam 6 huroof ka hona chahiye!');
@@ -439,7 +421,6 @@
                 document.getElementById('user-balance').innerText = currentUserData.balance;
 
                 if(currentUserData.isApproved === true) {
-                    // Referral link now uses custom username instead of UID
                     const refURL = window.location.origin + window.location.pathname + '?ref=' + username;
                     document.getElementById('ref-link').value = refURL;
                     document.getElementById('ref-box').classList.remove('hidden');
