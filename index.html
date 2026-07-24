@@ -48,7 +48,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            emailjs.init("YdSsqfkMHjmj_lhcb"); // Updated Public Key
+            emailjs.init("YdSsqfkMHjmj_lhcb");
         })();
     </script>
 </head>
@@ -60,6 +60,7 @@
         <h2 style="font-size: 22px; color: #007bff;">Madni Investment Scheme</h2>
         <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">Account Banayein Ya Login Karein</p>
         
+        <input type="text" id="reg-username" placeholder="Apna Unique Username Likhein (e.g. madni123)">
         <input type="email" id="email" placeholder="Apna Email Likhein">
         <input type="password" id="password" placeholder="Password Likhein">
         
@@ -118,7 +119,7 @@
 
         <!-- Live Ticker -->
         <div class="ticker-wrap" id="live-ticker">
-            <span>Khushamdeed! Madni Investment Scheme mein</span>
+            <span>Khushamdeed! Madni Investment Scheme mein transactions jari hain...</span>
         </div>
 
         <!-- Global Stats Box -->
@@ -139,7 +140,7 @@
         <div id="activation-box" class="info-box">
             <strong>⚠️ Account Not Active!</strong><br>
             Account active karne ke liye 150 Rs is account par bhejein:<br>
-            <b>Easypaisa 03087863040 (Muhammad Izhar) sirf EasyPaisa pe he send karna</b><br>
+            <b>Easypaisa / JazzCash: 03001234567 (M. Madni Ansari)</b><br>
             Payment ke baad TRX ID aur Email support par bhejein. Payment verify hone ke baad aapka referral link unlock hoga.
         </div>
 
@@ -160,12 +161,11 @@
 
         <!-- Withdrawal Section -->
         <div style="margin-top: 20px;">
-            <h3 style="font-size: 16px; margin-bottom: 10px;">Withdrawal Request 5% Withdrawal Fees</h3>
+            <h3 style="font-size: 16px; margin-bottom: 10px;">Withdrawal Request</h3>
             <select id="withdraw-method">
                 <option value="Easypaisa">Easypaisa</option>
                 <option value="JazzCash">JazzCash</option>
             </select>
-    
             <input type="number" id="withdraw-amount" placeholder="Amount (Minimum Rs. 300)">
             <input type="text" id="withdraw-name" placeholder="Account Holder Name (e.g. Ali Khan)">
             <input type="text" id="withdraw-account" placeholder="Account Number (e.g. 03001234567)">
@@ -181,13 +181,9 @@
                 <button type="button" class="btn-email">Email Support Par Raabta Karein</button>
             </a>
             
-            <a href="https://chat.whatsapp.com/Jv1CAXE3ff3FkLrolUbLAc?s=cl&p=a&ilr=4" target="_blank" style="text-decoration: none;">
-                <button type="button" class="btn-whatsapp">Join WhatsApp Group For Updates</button>
+            <a href="https://whatsapp.com/your-group-link-here" target="_blank" style="text-decoration: none;">
+                <button type="button" class="btn-whatsapp">Join WhatsApp Group</button>
             </a>
-            <a href="https://whatsapp.com/channel/0029Vb8rfKP7tkjEhiFbtW2I" target="_blank" style="text-decoration: none;">
-    <button type="button" class="btn-whatsapp">Join WhatsApp Channel</button>
-</a>
-
 
             <p style="font-size: 12px; margin-top: 8px; color: #555;"><b>Email:</b> madniofficial123@gmail.com</p>
         </div>
@@ -240,34 +236,39 @@
 
 <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyCpdQsb_bol0P021RtPK3ni_KjeumZH6Wg",
-  authDomain: "referral-app-e5ee6.firebaseapp.com",
-  projectId: "referral-app-e5ee6",
-  storageBucket: "referral-app-e5ee6.firebasestorage.app",
-  messagingSenderId: "596106231816",
-  appId: "1:596106231816:web:90c5f29deebe5624b051bd"
-};
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
     let currentUserData = null;
     let currentUserId = null;
+    let currentUsername = null;
     let generatedOtp = null;
     let targetResetEmail = null;
 
+    let pendingRegUsername = "";
     let pendingRegEmail = "";
     let pendingRegPassword = "";
     let regGeneratedOtp = "";
 
     auth.onAuthStateChanged((user) => {
         if (user) {
-            currentUserId = user.uid;
-            loadDashboard(user);
-            
-            const userStatusRef = db.collection('status').doc(user.uid);
-            userStatusRef.set({ online: true, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
-            userStatusRef.onDisconnect().update({ online: false });
+            // Find username associated with this user uid
+            db.collection('users').where('uid', '==', user.uid).get().then((querySnapshot) => {
+                if(!querySnapshot.empty) {
+                    currentUsername = querySnapshot.docs[0].id;
+                    currentUserId = user.uid;
+                    loadDashboard(currentUsername);
+                }
+            });
         } else {
             showStep('auth-section');
         }
@@ -286,28 +287,34 @@
 
     // Start Registration & Send Real OTP via EmailJS
     function startRegistration() {
+        pendingRegUsername = document.getElementById('reg-username').value.trim().toLowerCase();
         pendingRegEmail = document.getElementById('email').value.trim();
         pendingRegPassword = document.getElementById('password').value.trim();
         
-        if(!pendingRegEmail || !pendingRegPassword) return alert('Email aur Password likhein!');
+        if(!pendingRegUsername || !pendingRegEmail || !pendingRegPassword) return alert('Username, Email aur Password sab likhein!');
         if(pendingRegPassword.length < 6) return alert('Password kam az kam 6 huroof ka hona chahiye!');
 
-        regGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        // Check if username already exists
+        db.collection('users').doc(pendingRegUsername).get().then((doc) => {
+            if(doc.exists) {
+                return alert('Yeh username pehle se istemal mein hai, koi aur naam chunein!');
+            }
 
-        // EmailJS template parameters (Template placeholders ke mutabiq keys match ki gayi hain)
-        const templateParams = {
-            email: pendingRegEmail,
-            otp_code: regGeneratedOtp
-        };
+            regGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Sending email via EmailJS with your Service ID & Template ID
-        emailjs.send('service_r6m1hdu', 'template_z6h0zso', templateParams)
-            .then(function(response) {
-                alert('OTP aapke email par bhej diya gaya hai! Apna email inbox check karein.');
-                showStep('register-otp-section');
-            }, function(error) {
-                alert('Email bhejne mein ghalti hui: ' + JSON.stringify(error));
-            });
+            const templateParams = {
+                email: pendingRegEmail,
+                otp_code: regGeneratedOtp
+            };
+
+            emailjs.send('service_r6m1hdu', 'template_z6h0zso', templateParams)
+                .then(function(response) {
+                    alert('OTP aapke email par bhej diya gaya hai! Apna email inbox check karein.');
+                    showStep('register-otp-section');
+                }, function(error) {
+                    alert('Email bhejne mein ghalti hui: ' + JSON.stringify(error));
+                });
+        });
     }
 
     // Verify Registration OTP and Create Account
@@ -321,7 +328,9 @@
                     const user = userCredential.user;
                     const refCode = new URLSearchParams(window.location.search).get('ref');
                     
-                    db.collection('users').doc(user.uid).set({
+                    // Saving user data using custom username as Document ID
+                    db.collection('users').doc(pendingRegUsername).set({
+                        uid: user.uid,
                         email: pendingRegEmail,
                         balance: 0,
                         referredBy: refCode || null,
@@ -329,6 +338,12 @@
                         usedPromo: false,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
+
+                    // Set Online Status using auth uid
+                    const userStatusRef = db.collection('status').doc(user.uid);
+                    userStatusRef.set({ online: true, username: pendingRegUsername, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
+                    userStatusRef.onDisconnect().update({ online: false });
+
                     alert('Email verify ho gayi aur account kamyabi se ban gaya!');
                 })
                 .catch(err => {
@@ -341,11 +356,22 @@
     }
 
     function loginUser() {
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         if(!email || !password) return alert('Email aur Password likhein!');
 
         auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                // Update online status on login
+                db.collection('users').where('uid', '==', user.uid).get().then((snapshot) => {
+                    if(!snapshot.empty) {
+                        let uname = snapshot.docs[0].id;
+                        db.collection('status').doc(user.uid).set({ online: true, username: uname, email: user.email, lastSeen: firebase.firestore.FieldValue.serverTimestamp() });
+                        db.collection('status').doc(user.uid).onDisconnect().update({ online: false });
+                    }
+                });
+            })
             .catch(err => alert(err.message));
     }
 
@@ -403,16 +429,18 @@
         });
     }
 
-    function loadDashboard(user) {
+    function loadDashboard(username) {
         showStep('dashboard-section');
 
-        db.collection('users').doc(user.uid).onSnapshot((doc) => {
+        db.collection('users').doc(username).onSnapshot((doc) => {
             if(doc.exists) {
                 currentUserData = doc.data();
+                currentUserId = currentUserData.uid;
                 document.getElementById('user-balance').innerText = currentUserData.balance;
 
                 if(currentUserData.isApproved === true) {
-                    const refURL = window.location.origin + window.location.pathname + '?ref=' + user.uid;
+                    // Referral link now uses custom username instead of UID
+                    const refURL = window.location.origin + window.location.pathname + '?ref=' + username;
                     document.getElementById('ref-link').value = refURL;
                     document.getElementById('ref-box').classList.remove('hidden');
                     document.getElementById('activation-box').classList.add('hidden');
@@ -429,12 +457,16 @@
             document.getElementById('stat-users').innerText = snapshot.size;
             
             let usersList = [];
-            snapshot.forEach(doc => usersList.push(doc.data()));
+            snapshot.forEach(doc => {
+                let uData = doc.data();
+                uData.username = doc.id;
+                usersList.push(uData);
+            });
             usersList.sort((a, b) => b.balance - a.balance);
             
             let lbHTML = '';
             usersList.slice(0, 10).forEach((u, index) => {
-                lbHTML += `<div class="leader-item"><b>#${index+1} ${u.email}</b> - Balance: Rs. ${u.balance}</div>`;
+                lbHTML += `<div class="leader-item"><b>#${index+1} @${u.username}</b> - Balance: Rs. ${u.balance}</div>`;
             });
             document.getElementById('leaderboard-container').innerHTML = lbHTML || '<p style="font-size:12px;">No data</p>';
         });
@@ -451,7 +483,7 @@
             document.getElementById('stat-withdrawal').innerText = 'Rs. ' + totalW;
         });
 
-        db.collection('withdrawals').where('userId', '==', user.uid).onSnapshot((snapshot) => {
+        db.collection('withdrawals').where('userId', '==', currentUserId).onSnapshot((snapshot) => {
             const historyContainer = document.getElementById('history-container');
             historyContainer.innerHTML = '';
             if (snapshot.empty) {
@@ -470,7 +502,7 @@
             });
         });
 
-        db.collection('users').where('referredBy', '==', user.uid).onSnapshot((snapshot) => {
+        db.collection('users').where('referredBy', '==', username).onSnapshot((snapshot) => {
             const teamContainer = document.getElementById('team-container');
             teamContainer.innerHTML = '';
             if (snapshot.empty) {
@@ -482,6 +514,7 @@
                 let joinDate = member.timestamp ? member.timestamp.toDate().toLocaleDateString() : 'N/A';
                 teamContainer.innerHTML += `
                     <div class="team-item">
+                        <b>Username:</b> @${doc.id}<br>
                         <b>Email:</b> ${member.email}<br>
                         <b>Joining Date:</b> ${joinDate}<br>
                         <b>Account Status:</b> ${member.isApproved ? '<span style="color:green; font-weight:bold;">Active</span>' : '<span style="color:orange; font-weight:bold;">Not Active</span>'}
@@ -490,7 +523,7 @@
             });
         });
 
-        db.collection('transactions').where('userId', '==', user.uid).onSnapshot((snapshot) => {
+        db.collection('transactions').where('userId', '==', currentUserId).onSnapshot((snapshot) => {
             const txContainer = document.getElementById('tx-container');
             txContainer.innerHTML = '';
             if(snapshot.empty) {
@@ -533,7 +566,7 @@
 
                 const randomBonus = Math.floor(Math.random() * 5) + 1;
 
-                db.collection('users').doc(currentUserId).update({
+                db.collection('users').doc(currentUsername).update({
                     balance: currentUserData.balance + randomBonus,
                     usedPromo: true
                 });
@@ -587,7 +620,7 @@
         if(amount > currentUserData.balance) return alert('Aapka balance kam hai!');
 
         db.collection('withdrawals').add({
-            userId: auth.currentUser.uid,
+            userId: currentUserId,
             email: currentUserData.email,
             amount: amount,
             method: method,
@@ -596,11 +629,11 @@
             status: 'pending',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            db.collection('users').doc(auth.currentUser.uid).update({
+            db.collection('users').doc(currentUsername).update({
                 balance: currentUserData.balance - amount
             });
             db.collection('transactions').add({
-                userId: auth.currentUser.uid,
+                userId: currentUserId,
                 email: currentUserData.email,
                 type: 'Withdrawal',
                 amount: amount,
